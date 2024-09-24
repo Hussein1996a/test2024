@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #007BFF;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        .edit-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .edit-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Phone Number</th>
+                    <th>Country</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="userTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // Fetch all user data from localStorage and display in the table
+        const userTable = document.getElementById("userTable");
+        for (let i = 0; i < localStorage.length; i++) {
+            const username = localStorage.key(i);
+            const userData = JSON.parse(localStorage.getItem(username));
+            if (userData) {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${userData.username}</td>
+                    <td>${userData.number}</td>
+                    <td>${userData.country}</td>
+                    <td><button class="edit-button" onclick="editUser('${username}')">Edit User</button></td>
+                `;
+                userTable.appendChild(row);
+            }
+        }
+
+        function editUser(username) {
+            window.location.href = `edit_user.html?username=${username}`;
+        }
+    </script>
+</body>
+</html>

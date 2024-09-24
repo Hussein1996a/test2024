@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #007BFF;
+        }
+        .contact-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .contact-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>User Dashboard</h1>
+        <div id="userInfo"></div>
+        <a class="contact-button" href="contact.html">Contact Us</a>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+
+        // Fetch user data from localStorage
+        const userData = JSON.parse(localStorage.getItem(username));
+        if (userData) {
+            document.getElementById("userInfo").innerHTML = `
+                <p><strong>Username:</strong> ${userData.username}</p>
+                <p><strong>Phone Number:</strong> ${userData.number}</p>
+                <p><strong>Country:</strong> ${userData.country}</p>
+            `;
+        } else {
+            document.getElementById("userInfo").innerText = "No user data found!";
+        }
+    </script>
+</body>
+</html>

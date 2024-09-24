@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #007BFF;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .hidden { display: none; }
+        .popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .message { background: white; padding: 20px; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="homePage">
+        <h1>Welcome to the Website</h1>
+        <button onclick="showCreateAccount()">Create Account</button>
+        <button onclick="showLogin()">Login</button>
+    </div>
+
+    <div class="container hidden" id="createAccountPage">
+        <h2>Create Account</h2>
+        <form id="dataForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" required>
+
+            <label for="number">Phone Number:</label>
+            <input type="text" id="number" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" oninput="checkPasswordStrength()" required>
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" oninput="checkPasswordMatch()" required>
+
+            <label for="country">Country:</label>
+            <select id="country" required>
+                <option value="US">United States</option>
+                <option value="EG">Egypt</option>
+                <!-- More countries can be added here -->
+            </select>
+
+            <div id="passwordStrength"></div>
+
+            <button type="submit">Create Account</button>
+        </form>
+        <button onclick="showHomePage()">Back</button>
+    </div>
+
+    <div class="container hidden" id="loginPage">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="loginUser">Username:</label>
+            <input type="text" id="loginUser" required>
+
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" required>
+
+            <button type="submit">Login</button>
+        </form>
+        <button onclick="showHomePage()">Back</button>
+    </div>
+
+    <div class="popup" id="popup">
+        <div class="message" id="popupMessage"></div>
+        <button id="closePopup" onclick="closePopup()">Close</button>
+    </div>
+
+    <script>
+        function showCreateAccount() {
+            document.getElementById("homePage").classList.add("hidden");
+            document.getElementById("createAccountPage").classList.remove("hidden");
+            document.getElementById("loginPage").classList.add("hidden");
+        }
+
+        function showLogin() {
+            document.getElementById("homePage").classList.add("hidden");
+            document.getElementById("createAccountPage").classList.add("hidden");
+            document.getElementById("loginPage").classList.remove("hidden");
+        }
+
+        function showHomePage() {
+            document.getElementById("homePage").classList.remove("hidden");
+            document.getElementById("createAccountPage").classList.add("hidden");
+            document.getElementById("loginPage").classList.add("hidden");
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById("password").value;
+            let strengthMessage = "";
+            const strengthIndicator = document.getElementById("passwordStrength");
+
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumbers = /[0-9]/.test(password);
+            const hasSpecialChars = /[!@#$%^&*]/.test(password);
+            const isLongEnough = password.length >= 8;
+
+            if (isLongEnough && hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChars) {
+                strengthMessage = "Strong Password!";
+                strengthIndicator.style.color = "green";
+            } else if (isLongEnough && (hasUpperCase || hasLowerCase) && hasNumbers) {
+                strengthMessage = "Medium Password!";
+                strengthIndicator.style.color = "orange";
+            } else {
+                strengthMessage = "Weak Password!";
+                strengthIndicator.style.color = "red";
+            }
+
+            strengthIndicator.innerText = strengthMessage;
+        }
+
+        function checkPasswordMatch() {
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+            if (password !== confirmPassword) {
+                document.getElementById("passwordStrength").innerText = "Passwords do not match!";
+                document.getElementById("passwordStrength").style.color = "red";
+            } else {
+                document.getElementById("passwordStrength").innerText = "";
+            }
+        }
+
+        document.getElementById("dataForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+            
+            // Store data in variables
+            const username = document.getElementById("username").value;
+            const number = document.getElementById("number").value;
+            const password = document.getElementById("password").value;
+            const country = document.getElementById("country").value;
+
+            // Send data to localStorage
+            localStorage.setItem(username, JSON.stringify({ username, number, password, country }));
+
+            showPopup("Account created successfully!", "success");
+            showHomePage();
+        });
+
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const loginUser = document.getElementById("loginUser").value;
+            const loginPassword = document.getElementById("loginPassword").value;
+
+            // Validate username and password
+            const storedData = JSON.parse(localStorage.getItem(loginUser));
+            if (storedData && storedData.password === loginPassword) {
+                // Redirect to user page
+                window.location.href = "user.html?username=" + encodeURIComponent(loginUser);
+            } else {
+                showPopup("Error: Invalid credentials!", "error");
+            }
+            showHomePage();
+        });
+
+        function showPopup(message, type) {
+            const popup = document.getElementById("popup");
+            const messageDiv = document.getElementById("popupMessage");
+            messageDiv.innerText = message;
+            messageDiv.className = type === "success" ? "success" : "error";
+            popup.style.display = "flex";
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+    </script>
+</body>
+</html>
